@@ -1,5 +1,5 @@
 {
-  "name": "english-word-typing-app",
+  "name": "english-word-typing-wsl",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/stangler/english-word-typing-app.git"
+    "url": "git+https://github.com/stangler/english-word-typing-wsl.git"
   },
   "keywords": [],
   "author": "",
@@ -17,9 +17,9 @@
   "type": "commonjs",
   "packageManager": "pnpm@11.10.0",
   "bugs": {
-    "url": "https://github.com/stangler/english-word-typing-app/issues"
+    "url": "https://github.com/stangler/english-word-typing-wsl/issues"
   },
-  "homepage": "https://github.com/stangler/english-word-typing-app#readme",
+  "homepage": "https://github.com/stangler/english-word-typing-wsl#readme",
   "devDependencies": {
     "csv-parse": "^5.6.0"
   }
