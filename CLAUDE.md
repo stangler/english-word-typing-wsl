@@ -33,10 +33,11 @@ pnpm run build
 
 ## アーキテクチャ
 
-- **単一HTMLファイル構成**: `english_typing.html` にCSS・JSが全て埋め込まれている。SPA的な画面遷移（start → quiz → result/history）を `<section>` の hidden属性で制御
+- **単一HTMLファイル構成**: `english_typing.html` にCSS・JSが全て埋め込まれている。SPA的な画面遷移（start → quiz → result/history/weak）を `<section>` の hidden属性で制御
 - **データフロー**: CSV (`csv/`) → `build.mjs` → JSON (`json/`) → `json/words-data.js` → HTML内JSで `window.WORDS` として読み込み
 - **状態管理**: グローバルの `state` オブジェクトに現在の問題キュー・スコア・間違えた問題などを保持
-- **永続化**: `localStorage` にテスト履歴 (`typingHistory`) と出題済み問題の進捗 (`typingAttempted`) を保存
+- **永続化**: `localStorage` にテスト履歴 (`typingHistory`)、出題済み問題の進捗 (`typingAttempted`)、レッスンごとの完了状況 (`typingCompletion`)、単語単位の記録 (`typingWordStats`) を保存。「履歴をすべて削除」で4つとも削除される
+- **苦手分析**: `submitAnswer()` が1問ごとに `recordWordStat()` で `typingWordStats` を更新する。`screen-weak` 画面（`showWeakScreen()`）が間違い回数ランキング・パート別・誤答タイプ別（`classifyTypingError()`）・品詞別・綴りの特徴別（`WORD_FEATURES`）の誤答率を表示し、JSONエクスポートもできる
 - **チャート**: Canvas APIによる手描きの折れ線グラフ（外部ライブラリ不使用）
 
 ## 単語データ構造

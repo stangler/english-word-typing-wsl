@@ -367,6 +367,24 @@
     .ring-holes{left:12px;}
   }
 
+  /* ---------- 苦手分析 ---------- */
+  .wk-summary{font-size:.9rem;color:var(--ink-soft);margin:0 0 14px;}
+  .wk-title{font-size:1rem;font-weight:900;margin:26px 0 6px;}
+  .wk-note{font-size:.78rem;color:var(--ink-soft);margin:0 0 10px;}
+  .wk-item{background:var(--card);border-left:4px solid var(--red);border-radius:8px;box-shadow:0 2px 8px var(--shadow);padding:10px 14px;margin-bottom:10px;}
+  .wk-item .wk-ja{font-size:.9rem;color:var(--ink-soft);}
+  .wk-item .wk-en{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:1.05rem;}
+  .wk-item .wk-your{font-size:.82rem;color:var(--red);}
+  .wk-item .wk-meta{font-size:.75rem;color:var(--ink-soft);margin-top:2px;}
+  .wk-row{display:flex;align-items:center;gap:8px;font-size:.82rem;margin:7px 0;}
+  .wk-label{flex:0 0 38%;min-width:0;word-break:break-word;}
+  .wk-bar{flex:1;height:10px;background:var(--line);border-radius:5px;overflow:hidden;}
+  .wk-bar > i{display:block;height:100%;background:var(--red);}
+  .wk-num{flex:0 0 118px;text-align:right;font-family:'JetBrains Mono',monospace;}
+  .wk-flag{color:var(--red);font-weight:700;}
+  .wk-dim{color:#9ca3af;}
+  .wk-actions{display:flex;flex-direction:column;gap:10px;margin-top:26px;}
+
   @media (prefers-reduced-motion:reduce){
     .mark path{transition:none !important;}
     .feedback{animation:none !important;}
@@ -400,6 +418,7 @@
       </label>
 
       <button id="history-btn" class="btn-primary" style="width:100%;margin-top:12px;">📊 履歴を見る</button>
+      <button id="weak-btn" class="btn-secondary" style="width:100%;margin-top:10px;">📉 苦手分析</button>
 
       <div class="history-actions" style="margin-top:18px;justify-content:center;">
         <button id="btn-clear-history" class="btn-secondary">履歴をすべて削除</button>
@@ -462,6 +481,7 @@
         <button id="btn-retry-wrong" class="btn-primary">間違えた問題だけもう一度</button>
         <button id="btn-retry-all" class="btn-secondary">もう一度すべて挑戦する</button>
         <button id="btn-view-history" class="btn-secondary">履歴を見る</button>
+        <button id="btn-view-weak" class="btn-secondary">📉 苦手分析</button>
         <button id="btn-back-start" class="btn-secondary">レッスン選択に戻る</button>
       </div>
     </section>
@@ -473,6 +493,8 @@
         <button id="btn-history-back" class="btn-secondary">戻る</button>
       </div>
 
+      <button id="btn-history-weak" class="btn-secondary" style="width:100%;margin-bottom:16px;">📉 苦手分析</button>
+
       <div id="stats-container" class="progress-panel"></div>
 
       <div id="progress-container" class="progress-panel"></div>
@@ -480,6 +502,15 @@
       <div id="charts-container"></div>
 
       <div class="history-detail-list" id="history-detail-list"></div>
+    </section>
+
+    <!-- ============ WEAK ANALYSIS SCREEN ============ -->
+    <section id="screen-weak" class="screen" hidden>
+      <div class="history-detail-header">
+        <h1 class="title">📉 苦手分析</h1>
+        <button id="btn-weak-back" class="btn-secondary">戻る</button>
+      </div>
+      <div id="weak-container"></div>
     </section>
 
   </main>
@@ -505,6 +536,7 @@ const screens = {
   quiz: document.getElementById('screen-quiz'),
   result: document.getElementById('screen-result'),
   history: document.getElementById('screen-history'),
+  weak: document.getElementById('screen-weak'),
 };
 function showScreen(name){
   for(const k in screens) screens[k].hidden = (k !== name);
@@ -833,6 +865,7 @@ function submitAnswer(){
   const isCorrect = normalize(userVal) !== '' && normalize(userVal) === normalize(item.answer);
 
   markAttempted(item);
+  recordWordStat(item, isCorrect, userVal);
 
   if(isCorrect){
     state.score++;
@@ -945,6 +978,7 @@ document.getElementById('btn-view-history').addEventListener('click', ()=>{
 
 /* ---- History functions ---- */
 const HISTORY_KEY = 'typingHistory';
+const WORDSTATS_KEY = 'typingWordStats';
 const MAX_HISTORY = 50;
 
 function saveHistory(lessonLabel, total, correct, wrong){
@@ -960,12 +994,41 @@ function saveHistory(lessonLabel, total, correct, wrong){
   history.unshift(entry);
   if(history.length > MAX_HISTORY) history.length = MAX_HISTORY;
   localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+  recordCompletion(lessonLabel, entry.pct, entry.date); // 履歴の上限(50件)で消えても着手済み判定が消えないように別途記録
   renderHistory(); // スタート画面の履歴表示をリロードなしで即時更新
 }
 
 function getHistory(){
   const stored = localStorage.getItem(HISTORY_KEY);
   return stored ? JSON.parse(stored) : [];
+}
+
+/* ---- 進捗バッジ用: カテゴリー/レッスン単位の「着手済み」記録（historyのように50件で古いものが消えない） ---- */
+const COMPLETION_KEY = 'typingCompletion';
+
+function loadCompletionMap(){
+  try{
+    const raw = localStorage.getItem(COMPLETION_KEY);
+    return raw ? JSON.parse(raw) : {};
+  }catch(e){
+    console.warn('進捗完了記録の読み込みに失敗しました:', e);
+    return {};
+  }
+}
+
+function recordCompletion(lessonLabel, pct, dateIso){
+  try{
+    const map = loadCompletionMap();
+    const prev = map[lessonLabel];
+    map[lessonLabel] = {
+      date: dateIso,
+      pct: pct,
+      count: (prev ? prev.count : 0) + 1
+    };
+    localStorage.setItem(COMPLETION_KEY, JSON.stringify(map));
+  }catch(e){
+    console.warn('進捗完了記録の保存に失敗しました:', e);
+  }
 }
 
 function deleteHistory(index){
@@ -978,6 +1041,8 @@ function deleteHistory(index){
 function clearHistory(){
   localStorage.removeItem(HISTORY_KEY);
   localStorage.removeItem(ATTEMPTED_KEY);
+  localStorage.removeItem(COMPLETION_KEY);
+  localStorage.removeItem(WORDSTATS_KEY);
   renderHistory();
 }
 
@@ -1093,10 +1158,13 @@ function getProgressItems(){
 }
 
 function getItemStatus(item, history, allLabel){
-  const matches = history.filter(h => h.lesson === allLabel || item.matchLabels.includes(h.lesson));
-  if(matches.length === 0) return {done:false};
-  matches.sort((a,b) => new Date(b.date) - new Date(a.date));
-  return {done:true, latest: matches[0], count: matches.length};
+  const map = loadCompletionMap();
+  const labels = [allLabel, ...item.matchLabels];
+  const records = labels.map(l => map[l]).filter(Boolean);
+  if(records.length === 0) return {done:false};
+  records.sort((a,b) => new Date(b.date) - new Date(a.date));
+  const count = records.reduce((sum, r) => sum + r.count, 0);
+  return {done:true, latest: records[0], count: count};
 }
 
 function renderProgress(history){
@@ -1520,15 +1588,305 @@ function renderStatsSection(history, highlightIndex){
   });
 }
 
+/* ---- 既存の typingHistory から typingCompletion への一度きりの移行 ---- */
+function migrateCompletionFromHistory(){
+  if(localStorage.getItem(COMPLETION_KEY) !== null) return; // 既に移行済み、または既にデータあり
+  const history = getHistory();
+  if(history.length === 0) return;
+  const map = {};
+  // 古い順に処理して、最終的に各ラベルの最新日時・回数が正しく積み上がるようにする
+  history.slice().sort((a,b) => new Date(a.date) - new Date(b.date)).forEach(h => {
+    const prev = map[h.lesson];
+    map[h.lesson] = {
+      date: h.date,
+      pct: h.pct,
+      count: (prev ? prev.count : 0) + 1
+    };
+  });
+  localStorage.setItem(COMPLETION_KEY, JSON.stringify(map));
+}
+
+/* ============================================================
+   問題単位の記録 と 苦手分析
+============================================================ */
+function loadWordStats(){
+  try{
+    const raw = localStorage.getItem(WORDSTATS_KEY);
+    return raw ? JSON.parse(raw) : {};
+  }catch(e){
+    console.warn('問題別記録の読み込みに失敗しました:', e);
+    return {};
+  }
+}
+
+function levenshtein(a, b){
+  const m = a.length, n = b.length;
+  if(m === 0) return n;
+  if(n === 0) return m;
+  let prev = Array.from({length:n+1}, (_, j) => j);
+  for(let i=1;i<=m;i++){
+    const cur = [i];
+    for(let j=1;j<=n;j++){
+      cur[j] = Math.min(prev[j]+1, cur[j-1]+1, prev[j-1] + (a[i-1] === b[j-1] ? 0 : 1));
+    }
+    prev = cur;
+  }
+  return prev[n];
+}
+
+// 隣り合う文字の入れ替えも1回と数える距離（Optimal String Alignment）
+function osaDistance(a, b){
+  const m = a.length, n = b.length;
+  const d = Array.from({length:m+1}, () => new Array(n+1).fill(0));
+  for(let i=0;i<=m;i++) d[i][0] = i;
+  for(let j=0;j<=n;j++) d[0][j] = j;
+  for(let i=1;i<=m;i++){
+    for(let j=1;j<=n;j++){
+      const cost = a[i-1] === b[j-1] ? 0 : 1;
+      d[i][j] = Math.min(d[i-1][j]+1, d[i][j-1]+1, d[i-1][j-1]+cost);
+      if(i>1 && j>1 && a[i-1] === b[j-2] && a[i-2] === b[j-1]){
+        d[i][j] = Math.min(d[i][j], d[i-2][j-2]+1);
+      }
+    }
+  }
+  return d[m][n];
+}
+
+const ERR_EMPTY   = '空欄（未回答）';
+const ERR_SYMBOL  = '記号・スペースのミス（\' . - など）';
+const ERR_ORDER   = '語順違い（熟語）';
+const ERR_MISSING = '語の欠落（熟語）';
+const ERR_EXTRA_W = '余分な語（熟語）';
+const ERR_ENDING  = '語尾の違い（-s / -ed / -ing など）';
+const ERR_DROP    = '1文字の脱字';
+const ERR_EXTRA_C = '1文字の余分';
+const ERR_SWAP    = '隣り合う文字の入れ替え';
+const ERR_SUBST   = '1文字の打ち間違い';
+const ERR_MULTI   = '複数文字の綴りミス（惜しい）';
+const ERR_OTHER   = '別の単語・うろ覚え';
+
+function classifyTypingError(user, answer){
+  const u = normalize(user || '');
+  const a = normalize(answer || '');
+  if(u === '') return ERR_EMPTY;
+
+  const strip = (x) => x.replace(/[\s'".,!?;:\-~]/g, '');
+  const us = strip(u), as = strip(a);
+  if(us === as) return ERR_SYMBOL;
+
+  const ut = u.split(' ').filter(Boolean), at = a.split(' ').filter(Boolean);
+  if(ut.length > 1 || at.length > 1){
+    if(ut.length === at.length && [...ut].sort().join(' ') === [...at].sort().join(' ')) return ERR_ORDER;
+    const count = (arr) => arr.reduce((m, w) => { m[w] = (m[w]||0) + 1; return m; }, {});
+    const isSubset = (x, y) => { const cy = count(y); return x.every(w => (cy[w] > 0) ? (cy[w]--, true) : false); };
+    if(ut.length < at.length && isSubset(ut, at)) return ERR_MISSING;
+    if(ut.length > at.length && isSubset(at, ut)) return ERR_EXTRA_W;
+  }
+
+  const shorter = us.length <= as.length ? us : as;
+  const longer  = us.length <= as.length ? as : us;
+  if(shorter.length >= 3 && longer.startsWith(shorter) &&
+     /^(s|es|d|ed|ing|er|est|ly|y|ness|ful)$/.test(longer.slice(shorter.length))) return ERR_ENDING;
+
+  const osa = osaDistance(us, as);
+  if(osa === 1){
+    if(levenshtein(us, as) === 2) return ERR_SWAP;
+    if(us.length < as.length) return ERR_DROP;
+    if(us.length > as.length) return ERR_EXTRA_C;
+    return ERR_SUBST;
+  }
+  if(as.length >= 4 && osa <= Math.max(2, Math.floor(as.length * 0.4))) return ERR_MULTI;
+  return ERR_OTHER;
+}
+
+function recordWordStat(item, correct, userAnswer){
+  try{
+    const stats = loadWordStats();
+    const key = getWordKey(item);
+    const now = new Date().toISOString();
+    const rec = stats[key] || {
+      lesson: item.lesson, part: item.part, answer: item.answer, ja: item.ja, pos: item.pos,
+      attempts: 0, wrong: 0, lastAt: null, lastWrongAt: null, wrongAnswers: [], errorTypes: {}
+    };
+    rec.attempts += 1;
+    rec.lastAt = now;
+    if(!correct){
+      rec.wrong += 1;
+      rec.lastWrongAt = now;
+      rec.wrongAnswers = [...(rec.wrongAnswers || []), userAnswer].slice(-5);
+      const type = classifyTypingError(userAnswer, item.answer);
+      rec.errorTypes = rec.errorTypes || {};
+      rec.errorTypes[type] = (rec.errorTypes[type] || 0) + 1;
+    }
+    stats[key] = rec;
+    localStorage.setItem(WORDSTATS_KEY, JSON.stringify(stats));
+  }catch(e){
+    console.warn('問題別記録の保存に失敗しました:', e);
+  }
+}
+
+// 単語の特徴（正解の綴りから判定）
+const WORD_FEATURES = [
+  { label: '熟語（スペースを含む）',        test: r => /\s/.test(r.answer.trim()) },
+  { label: '1語の単語',                     test: r => !/\s/.test(r.answer.trim()) },
+  { label: '短い（1〜4文字）',              test: r => r.answer.replace(/[^A-Za-z]/g, '').length <= 4 },
+  { label: '中くらい（5〜7文字）',          test: r => { const n = r.answer.replace(/[^A-Za-z]/g, '').length; return n >= 5 && n <= 7; } },
+  { label: '長い（8文字以上）',             test: r => r.answer.replace(/[^A-Za-z]/g, '').length >= 8 },
+  { label: '記号を含む（\' . - など）',      test: r => /['.\-]/.test(r.answer) },
+  { label: '同じ文字が連続（ll, ss, tt など）', test: r => /([a-z])\1/i.test(r.answer) },
+  { label: 'ie / ei を含む',                test: r => /ie|ei/i.test(r.answer) },
+  { label: 'gh / ph を含む',                test: r => /gh|ph/i.test(r.answer) },
+  { label: '-tion / -sion で終わる',        test: r => /(tion|sion)s?$/i.test(r.answer.trim()) },
+];
+
+function exportWordStatsJson(){
+  const data = {
+    exportedAt: new Date().toISOString(),
+    wordstats: loadWordStats(),
+    history: getHistory(),
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'english-typing-stats-' + new Date().toISOString().slice(0, 10) + '.json';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+
+function wordSourceLabel(r){
+  if(String(r.lesson) === 'elementary') return '小学校 ・ ' + r.part;
+  if(/^\d+-\d+$/.test(String(r.lesson))) return getSplitLessonLabel(String(r.lesson));
+  return 'Lesson ' + r.lesson;
+}
+
+function showWeakScreen(){
+  showScreen('weak');
+  const box = document.getElementById('weak-container');
+  const stats = loadWordStats();
+  const recs = Object.values(stats);
+
+  if(recs.length === 0){
+    box.innerHTML = '<div class="panel"><p class="wk-note" style="margin:0;">まだ問題別の記録がありません。テストを解くと、ここに間違えた単語と傾向が表示されます。<br>（記録は、この機能の追加後に解いた分から貯まります）</p></div>';
+    return;
+  }
+
+  const MIN = 3;
+  const totalAttempts = recs.reduce((x, r) => x + r.attempts, 0);
+  const totalWrong = recs.reduce((x, r) => x + r.wrong, 0);
+  const baseRate = totalAttempts > 0 ? totalWrong / totalAttempts : 0;
+  const pctStr = (x) => Math.round(x * 100) + '%';
+
+  const rateRow = (label, attempts, wrong) => {
+    if(attempts < MIN){
+      return '<div class="wk-row wk-dim"><div class="wk-label">' + escapeHtml(label) + '</div><div class="wk-bar"></div><div class="wk-num">データ不足 (' + wrong + '/' + attempts + ')</div></div>';
+    }
+    const rate = wrong / attempts;
+    const flag = rate - baseRate >= 0.10;
+    return '<div class="wk-row"><div class="wk-label' + (flag ? ' wk-flag' : '') + '">' + (flag ? '▲ ' : '') + escapeHtml(label) + '</div>' +
+      '<div class="wk-bar"><i style="width:' + Math.round(rate * 100) + '%"></i></div>' +
+      '<div class="wk-num">' + pctStr(rate) + ' (' + wrong + '/' + attempts + ')</div></div>';
+  };
+  const sortByRate = (list) => list.sort((x, y) => {
+    const xd = x.attempts < MIN, yd = y.attempts < MIN;
+    if(xd !== yd) return xd ? 1 : -1;
+    return (y.wrong / y.attempts) - (x.wrong / x.attempts);
+  });
+
+  // (a) 間違い回数ランキング
+  const ranking = recs.filter(r => r.wrong > 0).sort((x, y) =>
+    y.wrong - x.wrong ||
+    (y.wrong / y.attempts) - (x.wrong / x.attempts) ||
+    String(y.lastWrongAt).localeCompare(String(x.lastWrongAt))
+  ).slice(0, 30);
+  const rankingHtml = ranking.length === 0
+    ? '<p class="wk-note">間違えた単語はまだありません。</p>'
+    : ranking.map((r, i) => {
+        const last = (r.wrongAnswers && r.wrongAnswers.length) ? r.wrongAnswers[r.wrongAnswers.length - 1] : '';
+        const types = Object.entries(r.errorTypes || {}).map(([k, v]) => k + '×' + v).join(' / ');
+        return '<div class="wk-item">' +
+          '<div class="wk-ja">' + (i + 1) + '. ' + escapeHtml(r.ja) + '</div>' +
+          '<div class="wk-en">' + escapeHtml(r.answer) + '</div>' +
+          '<div class="wk-your">直近の誤答: ' + escapeHtml(last || '（未回答）') + '</div>' +
+          '<div class="wk-meta">❌ ' + r.wrong + '回 / ' + r.attempts + '回出題（' + escapeHtml(wordSourceLabel(r)) + '）' + (types ? ' ・ ' + escapeHtml(types) : '') + '</div>' +
+          '</div>';
+      }).join('');
+
+  // (b) パート/カテゴリー別
+  const groups = {};
+  recs.forEach(r => {
+    const k = r.lesson + '||' + r.part;
+    if(!groups[k]) groups[k] = { label: wordSourceLabel(r), attempts: 0, wrong: 0 };
+    groups[k].attempts += r.attempts;
+    groups[k].wrong += r.wrong;
+  });
+  const groupHtml = sortByRate(Object.values(groups)).map(g => rateRow(g.label, g.attempts, g.wrong)).join('');
+
+  // (c) 誤答タイプ別
+  const typeCount = {};
+  recs.forEach(r => Object.entries(r.errorTypes || {}).forEach(([k, v]) => { typeCount[k] = (typeCount[k] || 0) + v; }));
+  const typeList = Object.entries(typeCount).sort((x, y) => y[1] - x[1]);
+  const typeTotal = typeList.reduce((x, [, v]) => x + v, 0);
+  const typeHtml = typeList.length === 0
+    ? '<p class="wk-note">誤答の記録がありません。</p>'
+    : typeList.map(([k, v]) =>
+        '<div class="wk-row"><div class="wk-label">' + escapeHtml(k) + '</div>' +
+        '<div class="wk-bar"><i style="width:' + Math.round(v / typeTotal * 100) + '%"></i></div>' +
+        '<div class="wk-num">' + v + '件 (' + pctStr(v / typeTotal) + ')</div></div>'
+      ).join('');
+
+  // (d) 品詞別
+  const posRows = {};
+  recs.forEach(r => {
+    const label = POS_LABELS[r.pos] || r.pos || '（品詞なし）';
+    if(!posRows[label]) posRows[label] = { label, attempts: 0, wrong: 0 };
+    posRows[label].attempts += r.attempts;
+    posRows[label].wrong += r.wrong;
+  });
+  const posHtml = sortByRate(Object.values(posRows)).map(g => rateRow(g.label, g.attempts, g.wrong)).join('');
+
+  // (e) 綴り・形の特徴別
+  const featRows = WORD_FEATURES.map(f => {
+    let attempts = 0, wrong = 0;
+    recs.forEach(r => { if(f.test(r)){ attempts += r.attempts; wrong += r.wrong; } });
+    return { label: f.label, attempts, wrong };
+  }).filter(f => f.attempts > 0);
+  const featHtml = sortByRate(featRows).map(f => rateRow(f.label, f.attempts, f.wrong)).join('');
+
+  box.innerHTML =
+    '<p class="wk-summary">記録済み ' + recs.length + '語 ／ 回答 ' + totalAttempts + '回 ／ 誤答 ' + totalWrong + '回（全体の誤答率 ' + pctStr(baseRate) + '）</p>' +
+    '<div class="wk-title">間違い回数ランキング（上位30語）</div>' + rankingHtml +
+    '<div class="wk-title">パート/カテゴリー別の誤答率</div>' +
+    '<p class="wk-note">▲ は全体の誤答率より10ポイント以上高い項目。回答3回未満は「データ不足」</p>' + groupHtml +
+    '<div class="wk-title">誤答タイプ別</div>' +
+    '<p class="wk-note">自動判定のため目安です</p>' + typeHtml +
+    '<div class="wk-title">品詞別の誤答率</div>' + posHtml +
+    '<div class="wk-title">綴り・形の特徴別の誤答率</div>' +
+    '<p class="wk-note">1語が複数の特徴に当てはまることがあります</p>' + featHtml +
+    '<div class="wk-actions">' +
+      '<button id="btn-weak-export" class="btn-secondary">⬇ JSONエクスポート</button>' +
+      '<button id="btn-weak-back2" class="btn-secondary">戻る</button>' +
+    '</div>';
+  document.getElementById('btn-weak-export').addEventListener('click', exportWordStatsJson);
+  document.getElementById('btn-weak-back2').addEventListener('click', () => showScreen('start'));
+}
+
+document.getElementById('btn-weak-back').addEventListener('click', () => showScreen('start'));
+
 /* ---- Bootstrap ---- */
+migrateCompletionFromHistory();
 generateLessonButtons();
 renderHistory();
 document.getElementById('history-btn').addEventListener('click', ()=>{
   currentHistoryFilter = null;
   showHistoryScreen(0);
 });
+document.getElementById('weak-btn').addEventListener('click', showWeakScreen);
+document.getElementById('btn-view-weak').addEventListener('click', showWeakScreen);
+document.getElementById('btn-history-weak').addEventListener('click', showWeakScreen);
 document.getElementById('btn-clear-history').addEventListener('click', ()=>{
-  if(confirm('すべての履歴を削除しますか？')){
+  if(confirm('履歴と問題別の記録（苦手分析のデータ）をすべて削除しますか？')){
     clearHistory();
   }
 });

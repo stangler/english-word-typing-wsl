@@ -1656,8 +1656,8 @@ window.WORDS = [
     "memo": ""
   },
   {
-    "lesson": "5-3",
-    "part": "3",
+    "lesson": "5-2",
+    "part": "2",
     "en": "Scotland",
     "answer": "Scotland",
     "ipa": "[ˈskɑːtlənd]",
@@ -1668,8 +1668,8 @@ window.WORDS = [
     "memo": "形容詞は Scottish (スコットランドの)"
   },
   {
-    "lesson": "5-3",
-    "part": "3",
+    "lesson": "5-2",
+    "part": "2",
     "en": "them",
     "answer": "them",
     "ipa": "[ðem]",
@@ -1680,8 +1680,8 @@ window.WORDS = [
     "memo": ""
   },
   {
-    "lesson": "5-3",
-    "part": "3",
+    "lesson": "5-2",
+    "part": "2",
     "en": "concert",
     "answer": "concert",
     "ipa": "[ˈkɑːnsərt]",
@@ -1692,8 +1692,8 @@ window.WORDS = [
     "memo": ""
   },
   {
-    "lesson": "5-3",
-    "part": "3",
+    "lesson": "5-2",
+    "part": "2",
     "en": "performance",
     "answer": "performance",
     "ipa": "[pərˈfɔːrməns]",
@@ -1704,8 +1704,8 @@ window.WORDS = [
     "memo": "動詞は perform (演じる)"
   },
   {
-    "lesson": "5-3",
-    "part": "3",
+    "lesson": "5-2",
+    "part": "2",
     "en": "internet",
     "answer": "internet",
     "ipa": "[ˈɪntərnet]",
