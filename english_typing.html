@@ -91,8 +91,7 @@
   .lesson-card:hover{transform:translateY(-2px);box-shadow:0 6px 14px var(--shadow);}
   .lesson-card:active{transform:translateY(0);}
   .lesson-card[data-lesson="elementary"]{--accent:var(--ink-soft);}
-  .lesson-card[data-lesson="all"]{--accent:var(--red);grid-column:1 / -1;}
-  .lesson-card[data-lesson]:not([data-lesson="elementary"]):not([data-lesson="all"]){
+  .lesson-card[data-lesson]:not([data-lesson="elementary"]){
     --accent:hsl(var(--hue,200),60%,50%);
   }
   .lesson-no{display:block;font-weight:900;font-size:1.15rem;}
@@ -128,8 +127,6 @@
   }
   .category-btn:hover{transform:translateY(-1px);border-color:var(--ink-soft);}
   .category-btn:active{transform:translateY(0);}
-  .category-btn.cat-all{--accent:var(--red);border-color:var(--red);color:var(--red);}
-  .category-btn.cat-all:hover{background:var(--red);color:#fff;}
 
   .shuffle-toggle{
     display:flex;align-items:center;gap:8px;
@@ -360,7 +357,6 @@
 
   @media (max-width:480px){
     .lesson-grid{grid-template-columns:1fr;}
-    .lesson-card[data-lesson="all"]{grid-column:auto;}
     .prompt-ja{font-size:1.35rem;}
     .card{padding:22px 18px 22px 56px;}
     .card::before{left:40px;}
@@ -409,8 +405,6 @@
         <p id="category-panel-title">小学校のカテゴリーを選んでください</p>
         <div class="category-grid" id="category-grid"></div>
       </div>
-
-      <div id="all-lesson-container" class="lesson-grid" style="margin-bottom:24px;"></div>
 
       <label class="shuffle-toggle">
         <input type="checkbox" id="shuffle-check">
@@ -594,21 +588,6 @@ function getLessonList(){
   return {nums, hasElem, strLessons, splitLessons, lessonGroups};
 }
 
-function allLessonLabel(){
-  const {nums, hasElem, strLessons} = getLessonList();
-  const parts = nums.map(n => 'Lesson ' + n);
-  strLessons.forEach(s => {
-    // Format split lessons like "1-1" as "Lesson 1-1"
-    if (/^\d+-\d+$/.test(s)) {
-      parts.push('Lesson ' + s);
-    } else {
-      parts.push(s);
-    }
-  });
-  const str = parts.join('、') + (hasElem ? ' + 小学校' : '');
-  return '全レッスン（' + str + '）';
-}
-
 /* ---- sub-selection panel (used for 小学校 categories AND Lesson1/2/3 parts) ---- */
 function getElementaryCategories(){
   const parts = [...new Set(WORDS.filter(w => w.lesson === 'elementary').map(w => w.part))];
@@ -628,12 +607,6 @@ function buildSubPanel(kind){
       catCounts[w.part] = (catCounts[w.part] || 0) + 1;
     });
 
-    const allBtn = document.createElement('button');
-    allBtn.className = 'category-btn cat-all';
-    allBtn.textContent = 'すべて（' + Object.values(catCounts).reduce((a,b)=>a+b, 0) + '）';
-    allBtn.addEventListener('click', ()=> startQuiz('elementary'));
-    grid.appendChild(allBtn);
-
     cats.forEach(cat => {
       const btn = document.createElement('button');
       btn.className = 'category-btn';
@@ -651,14 +624,6 @@ function buildSubPanel(kind){
     const lessonKeys = [...new Set(
       WORDS.filter(w => String(w.lesson).startsWith(lessonNum + '-')).map(w => w.lesson)
     )].sort((a,b) => Number(a.split('-')[1]) - Number(b.split('-')[1]));
-
-    const totalCount = lessonKeys.reduce((sum,k) => sum + (counts[k] || 0), 0);
-
-    const allBtn = document.createElement('button');
-    allBtn.className = 'category-btn cat-all';
-    allBtn.textContent = 'すべて（' + totalCount + '）';
-    allBtn.addEventListener('click', ()=> startQuiz(lessonNum + '-all'));
-    grid.appendChild(allBtn);
 
     lessonKeys.forEach(key => {
       const btn = document.createElement('button');
@@ -707,7 +672,6 @@ function generateLessonButtons(){
 
   const {nums, hasElem, strLessons, splitLessons, lessonGroups} = getLessonList();
   const counts = {};
-  let totalCount = 0;
   WORDS.forEach(w => { counts[w.lesson] = (counts[w.lesson] || 0) + 1; });
 
   // Split lessons があるLessonは「小学校」と同様に1つのボタン＋パート選択パネルにまとめる
@@ -722,7 +686,6 @@ function generateLessonButtons(){
     btn.innerHTML = '<span class="lesson-no">Lesson ' + lessonNum + '</span><span class="lesson-count">' + groupCount + '問／パートを選ぶ</span>';
     btn.addEventListener('click', ()=> toggleSubPanel('lesson:' + lessonNum));
     grid.appendChild(btn);
-    totalCount += groupCount;
   });
 
   // Then add regular numbered lessons (2, 3, etc.)
@@ -735,7 +698,6 @@ function generateLessonButtons(){
     btn.innerHTML = '<span class="lesson-no">Lesson ' + lesson + '</span><span class="lesson-count">' + (counts[lesson] || 0) + '問</span>';
     btn.addEventListener('click', ()=> startQuiz(String(lesson)));
     grid.appendChild(btn);
-    totalCount += (counts[lesson] || 0);
   });
 
   if(hasElem){
@@ -745,7 +707,6 @@ function generateLessonButtons(){
     btn.innerHTML = '<span class="lesson-no">小学校</span><span class="lesson-count">' + (counts['elementary'] || 0) + '問／カテゴリーを選ぶ</span>';
     btn.addEventListener('click', ()=> toggleSubPanel('elementary'));
     grid.appendChild(btn);
-    totalCount += (counts['elementary'] || 0);
   }
 
   strLessons.forEach(lesson => {
@@ -757,16 +718,8 @@ function generateLessonButtons(){
     btn.innerHTML = '<span class="lesson-no">' + lesson + '</span><span class="lesson-count">' + (counts[lesson] || 0) + '問</span>';
     btn.addEventListener('click', ()=> startQuiz(lesson));
     grid.appendChild(btn);
-    totalCount += (counts[lesson] || 0);
   });
 
-  const btnAll = document.createElement('button');
-  btnAll.className = 'lesson-card';
-  btnAll.dataset.lesson = 'all';
-  btnAll.innerHTML = '<span class="lesson-no">' + allLessonLabel() + '</span><span class="lesson-count">' + totalCount + '問</span>';
-  btnAll.addEventListener('click', ()=> startQuiz('all'));
-  const allContainer = document.getElementById('all-lesson-container');
-  allContainer.appendChild(btnAll);
 }
 
 function buildPool(lessonFilter){
@@ -779,17 +732,6 @@ function buildPool(lessonFilter){
     const category = lessonFilter.slice(pipeIdx + 1);
     pool = WORDS.filter(w => String(w.lesson) === lesson && w.part === category);
     label = '小学校 ・ ' + category;
-  } else if(lessonFilter === 'all'){
-    pool = WORDS.slice();
-    label = allLessonLabel();
-  } else if(lessonFilter === 'elementary'){
-    pool = WORDS.filter(w => String(w.lesson) === 'elementary');
-    label = '小学校';
-  } else if(/^\d+-all$/.test(lessonFilter)){
-    // "1-all" のようなLessonグループ全体（パート横断）
-    const lessonNum = lessonFilter.split('-')[0];
-    pool = WORDS.filter(w => String(w.lesson).startsWith(lessonNum + '-'));
-    label = 'Lesson' + lessonNum + ' すべて';
   } else if(/^\d+-\d+$/.test(lessonFilter)){
     // Split lessons like "1-1", "2-1", "3-1"
     pool = WORDS.filter(w => String(w.lesson) === lessonFilter);
@@ -829,11 +771,7 @@ function renderQuestion(){
   document.getElementById('score-correct').textContent = '◯' + state.score;
   document.getElementById('score-wrong').textContent = '✗' + state.wrong.length;
 
-  const showLessonNo = (state.lessonFilter === 'all');
-  const lessonNum = isNaN(Number(item.lesson)) ? item.lesson : 'Lesson ' + item.lesson;
-  document.getElementById('tag-part').textContent = showLessonNo
-    ? (lessonNum + ' ・ ' + partLabel(item.part, item.lesson))
-    : partLabel(item.part, item.lesson);
+  document.getElementById('tag-part').textContent = partLabel(item.part, item.lesson);
   document.getElementById('tag-pos').textContent = POS_LABELS[item.pos] || item.pos;
   document.getElementById('prompt-ja').textContent = item.ja;
 
@@ -1119,7 +1057,7 @@ function getProgressItems(){
       items.push({
         group: 'Lesson' + lessonNum,
         badgeLabel: fullLabel.replace('Lesson' + lessonNum + ' ', ''),
-        matchLabels: [fullLabel, 'Lesson' + lessonNum + ' すべて'],
+        matchLabels: [fullLabel],
         filter: key
       });
     });
@@ -1139,7 +1077,7 @@ function getProgressItems(){
       items.push({
         group: '小学校',
         badgeLabel: cat,
-        matchLabels: ['小学校 ・ ' + cat, '小学校'],
+        matchLabels: ['小学校 ・ ' + cat],
         filter: 'elementary|' + cat
       });
     });
@@ -1157,9 +1095,9 @@ function getProgressItems(){
   return items;
 }
 
-function getItemStatus(item, history, allLabel){
+function getItemStatus(item, history){
   const map = loadCompletionMap();
-  const labels = [allLabel, ...item.matchLabels];
+  const labels = item.matchLabels;
   const records = labels.map(l => map[l]).filter(Boolean);
   if(records.length === 0) return {done:false};
   records.sort((a,b) => new Date(b.date) - new Date(a.date));
@@ -1173,8 +1111,7 @@ function renderProgress(history){
   const items = getProgressItems();
   if(items.length === 0) return;
 
-  const allLabel = allLessonLabel();
-  const statuses = items.map(it => getItemStatus(it, history, allLabel));
+  const statuses = items.map(it => getItemStatus(it, history));
   const doneCount = statuses.filter(s => s.done).length;
   const attempted = loadAttempted();
 
