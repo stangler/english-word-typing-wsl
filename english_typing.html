@@ -233,8 +233,9 @@
     padding:10px 0;border-bottom:1px solid var(--line);font-size:.95rem;
   }
   .wrong-item:last-child{border-bottom:none;}
-  .wrong-item .ja{color:var(--ink-soft);}
+  .wrong-item .ja{color:var(--ink-soft);flex:1;}
   .wrong-item .en{font-family:'JetBrains Mono','Consolas',monospace;font-weight:700;color:var(--blue);white-space:nowrap;}
+  .wrong-item .audio-btn{width:36px;height:36px;font-size:1rem;align-self:center;}
 
   .result-actions{display:flex;flex-direction:column;gap:10px;}
   .result-actions .btn-primary{margin-top:0;}
@@ -582,8 +583,7 @@ function stopAudio(){
   audioBtn.classList.remove('playing');
 }
 
-function playAudio(){
-  const item = state.queue && state.queue[state.index];
+function speakItem(item){
   if(!item || !canSpeak) return;
   const text = speakText(item);
   if(!text) return;
@@ -594,9 +594,15 @@ function playAudio(){
   const v = pickVoice();
   if(v) u.voice = v;
   currentUtter = u;
-  audioBtn.classList.add('playing');
   u.onend = u.onerror = ()=>{ if(currentUtter === u) stopAudio(); };
   window.speechSynthesis.speak(u);
+}
+
+function playAudio(){
+  const item = state.queue && state.queue[state.index];
+  if(!item || !canSpeak) return;
+  speakItem(item);
+  audioBtn.classList.add('playing');
 }
 
 audioBtn.addEventListener('click', ()=>{
@@ -950,6 +956,16 @@ function showResult(){
       const div = document.createElement('div');
       div.className = 'wrong-item';
       div.innerHTML = '<span class="ja">'+escapeHtml(item.ja)+'</span><span class="en">'+escapeHtml(item.answer)+'</span>';
+      if(canSpeak){
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'audio-btn';
+        btn.textContent = '🔊';
+        btn.title = '音声を再生';
+        btn.setAttribute('aria-label', '音声を再生');
+        btn.addEventListener('click', ()=> speakItem(item));
+        div.appendChild(btn);
+      }
       listEl.appendChild(div);
     });
   }
@@ -971,6 +987,7 @@ document.getElementById('btn-retry-all').addEventListener('click', ()=>{
   startQuiz(state.lessonFilter);
 });
 document.getElementById('btn-back-start').addEventListener('click', ()=>{
+  stopAudio();
   showScreen('start');
 });
 document.getElementById('btn-view-history').addEventListener('click', ()=>{
