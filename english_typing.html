@@ -171,7 +171,18 @@
   .tag-green{background:var(--green);}
 
   .prompt-label{margin:0;font-size:.78rem;color:var(--ink-soft);letter-spacing:.06em;}
-  .prompt-ja{margin:8px 0 26px;font-size:1.65rem;font-weight:700;line-height:1.55;min-height:2.2em;}
+  .prompt-ja{margin:0;font-size:1.65rem;font-weight:700;line-height:1.55;min-height:2.2em;}
+  .prompt-row{display:flex;align-items:center;gap:12px;margin:8px 0 26px;}
+  .audio-btn{
+    flex:none;width:44px;height:44px;border-radius:50%;
+    border:2px solid var(--line);background:var(--card);color:var(--ink);
+    font-size:1.2rem;line-height:1;cursor:pointer;
+    transition:transform .12s, border-color .12s;
+  }
+  .audio-btn:hover{transform:translateY(-1px);border-color:var(--ink-soft);}
+  .audio-btn:focus-visible{outline:3px solid var(--ink-soft);outline-offset:2px;}
+  .audio-btn.playing{border-color:var(--ink);background:var(--line);}
+  .audio-btn[hidden]{display:none;}
 
   .answer-row{position:relative;}
   #answer-input{
@@ -437,7 +448,10 @@
         </div>
 
         <p class="prompt-label">日本語の意味</p>
-        <p id="prompt-ja" class="prompt-ja"></p>
+        <div class="prompt-row">
+          <p id="prompt-ja" class="prompt-ja"></p>
+          <button id="audio-btn" class="audio-btn" type="button" aria-label="音声を再生" title="音声を再生" hidden>🔊</button>
+        </div>
 
         <div class="answer-row">
           <input id="answer-input" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="英語を入力してEnter">
@@ -542,6 +556,53 @@ const feedbackEl = document.getElementById('feedback');
 const markSvg = document.getElementById('mark-svg');
 const markPath = document.getElementById('mark-path');
 const shuffleCheck = document.getElementById('shuffle-check');
+
+/* ---- 音声再生（ブラウザの音声合成で読み上げ） ---- */
+const audioBtn = document.getElementById('audio-btn');
+const canSpeak = ('speechSynthesis' in window) && ('SpeechSynthesisUtterance' in window);
+let currentUtter = null;
+
+function speakText(item){
+  // 「be good at ~」のような記号部分は読み上げない
+  return String(item.en || '').replace(/[~〜～]/g, ' ').replace(/\s+/g, ' ').trim();
+}
+
+function pickVoice(){
+  const voices = window.speechSynthesis.getVoices().filter(v => /^en[-_]US/i.test(v.lang));
+  return voices.find(v => /natural|online/i.test(v.name))
+      || voices.find(v => /google|samantha|aria|jenny/i.test(v.name))
+      || voices[0] || null;
+}
+
+function stopAudio(){
+  if(canSpeak){
+    currentUtter = null;
+    window.speechSynthesis.cancel();
+  }
+  audioBtn.classList.remove('playing');
+}
+
+function playAudio(){
+  const item = state.queue && state.queue[state.index];
+  if(!item || !canSpeak) return;
+  const text = speakText(item);
+  if(!text) return;
+  stopAudio();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'en-US';
+  u.rate = 0.9;
+  const v = pickVoice();
+  if(v) u.voice = v;
+  currentUtter = u;
+  audioBtn.classList.add('playing');
+  u.onend = u.onerror = ()=>{ if(currentUtter === u) stopAudio(); };
+  window.speechSynthesis.speak(u);
+}
+
+audioBtn.addEventListener('click', ()=>{
+  playAudio();
+  inputEl.focus();
+});
 
 let state = {};
 
@@ -774,6 +835,8 @@ function renderQuestion(){
   document.getElementById('tag-part').textContent = partLabel(item.part, item.lesson);
   document.getElementById('tag-pos').textContent = POS_LABELS[item.pos] || item.pos;
   document.getElementById('prompt-ja').textContent = item.ja;
+  stopAudio();
+  audioBtn.hidden = !canSpeak;
 
   inputEl.value = '';
   inputEl.readOnly = false;
