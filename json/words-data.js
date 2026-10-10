@@ -1478,8 +1478,8 @@ window.WORDS = [
   {
     "lesson": "5-1",
     "part": "1",
-    "en": "~'s",
-    "answer": "~'s",
+    "en": "'s",
+    "answer": "'s",
     "ipa": "[—]",
     "pos": "句",
     "ja": "〜の",
