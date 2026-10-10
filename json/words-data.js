@@ -986,8 +986,8 @@ window.WORDS = [
   {
     "lesson": "3-6",
     "part": "Take Action! Talk 1",
-    "en": "get to ~",
-    "answer": "get to ~",
+    "en": "get to",
+    "answer": "get to",
     "ipa": "[—]",
     "pos": "句",
     "ja": "〜に着く",
