@@ -1,0 +1,50 @@
+[
+  {
+    "lesson": "6-3",
+    "part": "3",
+    "en": "excited",
+    "answer": "excited",
+    "ipa": "[iksáitəd]",
+    "pos": "形",
+    "ja": "わくわくして",
+    "ex_en": "I'm so nervous and so excited!",
+    "ex_ja": "めっちゃ緊張するしめっちゃわくわくする！",
+    "memo": "動詞は excite(わくわくさせる)"
+  },
+  {
+    "lesson": "6-3",
+    "part": "3",
+    "en": "which",
+    "answer": "which",
+    "ipa": "[hwítʃ]",
+    "pos": "代",
+    "ja": "どちら、どれ",
+    "ex_en": "Which one is salt and which one is pepper?",
+    "ex_ja": "どっちが塩でどっちが胡椒？",
+    "memo": ""
+  },
+  {
+    "lesson": "6-3",
+    "part": "3",
+    "en": "or",
+    "answer": "or",
+    "ipa": "[ɔ́:r]",
+    "pos": "接",
+    "ja": "または",
+    "ex_en": "Circle yes or no.",
+    "ex_ja": "「はい」か「いいえ」のどちらかを丸で囲んでください。",
+    "memo": ""
+  },
+  {
+    "lesson": "6-3",
+    "part": "3",
+    "en": "pasta",
+    "answer": "pasta",
+    "ipa": "[pá:stə]",
+    "pos": "名",
+    "ja": "パスタ",
+    "ex_en": "I can't choose between pizza and pasta.",
+    "ex_ja": "ピザもパスタも捨てがたい。",
+    "memo": ""
+  }
+]

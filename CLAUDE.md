@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## 概要
 
-NEW CROWN Lesson 1〜5 + 小学校の単語を対象とした、ブラウザで直接動作するタイピング練習アプリです。
+NEW CROWN Lesson 1〜9 + 小学校の単語を対象とした、ブラウザで直接動作するタイピング練習アプリです。
 フレームワーク不使用の単一HTMLファイルアプリで、CSVデータをJSONに変換するビルドスクリプトを含みます。
 開発は WSL2 (Ubuntu) 上で行います（もともとは Windows ローカルで作業しており、Windows 特有のトラブルを避けるため WSL へ移設しました）。
 

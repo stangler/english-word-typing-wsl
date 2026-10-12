@@ -1,0 +1,74 @@
+[
+  {
+    "lesson": "9-4",
+    "part": "Take Action! Listen 5",
+    "en": "holiday",
+    "answer": "holiday",
+    "ipa": "[hálədèi]",
+    "pos": "名",
+    "ja": "祝日",
+    "ex_en": "I overslept! Oh right, it's a holiday.",
+    "ex_ja": "寝坊した！ そうだ、今日は祝日だ。",
+    "memo": "平日にとるお休みは day off"
+  },
+  {
+    "lesson": "9-4",
+    "part": "Take Action! Listen 5",
+    "en": "clear",
+    "answer": "clear",
+    "ipa": "[klíər]",
+    "pos": "形",
+    "ja": "澄んだ",
+    "ex_en": "Now my suspicion is clear, right?",
+    "ex_ja": "これでぼくの容疑は晴れたということだね？",
+    "memo": "副詞は clearly(くっきりと)"
+  },
+  {
+    "lesson": "9-4",
+    "part": "Take Action! Listen 5",
+    "en": "degree",
+    "answer": "degree",
+    "ipa": "[digrí:]",
+    "pos": "名",
+    "ja": "〈温度や角度の〉度",
+    "ex_en": "Bake in an oven at 180 degrees for 8–10 minutes.",
+    "ex_ja": "180度のオーブンで8分から10分焼いてください。",
+    "memo": ""
+  },
+  {
+    "lesson": "9-4",
+    "part": "Take Action! Listen 5",
+    "en": "low",
+    "answer": "low",
+    "ipa": "[lóu]",
+    "pos": "名",
+    "ja": "低い水準",
+    "ex_en": "The low today is 2°C.",
+    "ex_ja": "今日の最低気温は2度です。",
+    "memo": "反対は high(高い水準)"
+  },
+  {
+    "lesson": "9-4",
+    "part": "Take Action! Listen 5",
+    "en": "news",
+    "answer": "news",
+    "ipa": "[njú:z]",
+    "pos": "名",
+    "ja": "知らせ",
+    "ex_en": "Which do you want first, good news or bad news?",
+    "ex_ja": "いいニュースと悪いニュース、どっち先がいい？",
+    "memo": "news の下線部の発音に注意"
+  },
+  {
+    "lesson": "9-4",
+    "part": "Take Action! Listen 5",
+    "en": "rain",
+    "answer": "rain",
+    "ipa": "[réin]",
+    "pos": "動",
+    "ja": "雨が降る",
+    "ex_en": "Ugh, it's raining so hard!",
+    "ex_ja": "うわっ、めっちゃ雨降ってる！",
+    "memo": "名詞も rain(雨)"
+  }
+]

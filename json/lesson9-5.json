@@ -1,0 +1,38 @@
+[
+  {
+    "lesson": "9-5",
+    "part": "Take Action! Talk 4",
+    "en": "cut",
+    "answer": "cut",
+    "ipa": "[kʌ́t]",
+    "pos": "動",
+    "ja": "切る",
+    "ex_en": "Cut on the dotted line.",
+    "ex_ja": "点線に沿ってお切りください。",
+    "memo": ""
+  },
+  {
+    "lesson": "9-5",
+    "part": "Take Action! Talk 4",
+    "en": "All right",
+    "answer": "All right",
+    "ipa": "[—]",
+    "pos": "句",
+    "ja": "よろしい。",
+    "ex_en": "Can I ask my friends? — All right.",
+    "ex_ja": "友達に聞いてもいいですか？ — いいですよ。",
+    "memo": ""
+  },
+  {
+    "lesson": "9-5",
+    "part": "Take Action! Talk 4",
+    "en": "No problem",
+    "answer": "No problem",
+    "ipa": "[—]",
+    "pos": "句",
+    "ja": "問題ありません。",
+    "ex_en": "Can I use your eraser? — No problem.",
+    "ex_ja": "消しゴム借りてもいい？ — いいよ。",
+    "memo": ""
+  }
+]

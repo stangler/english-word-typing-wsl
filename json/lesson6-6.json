@@ -1,0 +1,62 @@
+[
+  {
+    "lesson": "6-6",
+    "part": "Take Action! Listen 3",
+    "en": "local",
+    "answer": "local",
+    "ipa": "[lóukəl]",
+    "pos": "形",
+    "ja": "地元の",
+    "ex_en": "I'm going to go to the local high school.",
+    "ex_ja": "私は地元の高校に行くつもり。",
+    "memo": ""
+  },
+  {
+    "lesson": "6-6",
+    "part": "Take Action! Listen 3",
+    "en": "candle",
+    "answer": "candle",
+    "ipa": "[kǽndl]",
+    "pos": "名",
+    "ja": "ろうそく",
+    "ex_en": "I think there's one extra candle.",
+    "ex_ja": "ろうそくが1本多いぞ。",
+    "memo": ""
+  },
+  {
+    "lesson": "6-6",
+    "part": "Take Action! Listen 3",
+    "en": "organic",
+    "answer": "organic",
+    "ipa": "[ɔ:rgǽnik]",
+    "pos": "形",
+    "ja": "有機栽培の",
+    "ex_en": "Are organic vegetables chemical free?",
+    "ex_ja": "有機野菜って無農薬ですか？",
+    "memo": "アクセントの位置に注意"
+  },
+  {
+    "lesson": "6-6",
+    "part": "Take Action! Listen 3",
+    "en": "soap",
+    "answer": "soap",
+    "ipa": "[sóup]",
+    "pos": "名",
+    "ja": "石けん",
+    "ex_en": "This soap smells good.",
+    "ex_ja": "この石けんいい匂いがする。",
+    "memo": ""
+  },
+  {
+    "lesson": "6-6",
+    "part": "Take Action! Listen 3",
+    "en": "support",
+    "answer": "support",
+    "ipa": "[səpɔ́:rt]",
+    "pos": "動",
+    "ja": "支援する",
+    "ex_en": "Don't worry. We support you. You can do it.",
+    "ex_ja": "大丈夫。俺らが支えてるから。がんばれ。",
+    "memo": "名詞も support(支援)"
+  }
+]

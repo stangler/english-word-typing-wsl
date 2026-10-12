@@ -1,0 +1,110 @@
+[
+  {
+    "lesson": "9-2",
+    "part": "2",
+    "en": "recommend",
+    "answer": "recommend",
+    "ipa": "[rèkəménd]",
+    "pos": "動",
+    "ja": "勧める",
+    "ex_en": "Why did Amazon recommend this book to me?",
+    "ex_ja": "なんで Amazon はこの本をお勧めしてきたんだ？",
+    "memo": "名詞は recommendation(お勧め)"
+  },
+  {
+    "lesson": "9-2",
+    "part": "2",
+    "en": "familiar",
+    "answer": "familiar",
+    "ipa": "[fəmíljər]",
+    "pos": "形",
+    "ja": "馴染みのある",
+    "ex_en": "I think that person looks familiar.",
+    "ex_ja": "あの人、見覚えがある気がする。",
+    "memo": ""
+  },
+  {
+    "lesson": "9-2",
+    "part": "2",
+    "en": "probably",
+    "answer": "probably",
+    "ipa": "[prábəbli]",
+    "pos": "副",
+    "ja": "たぶん",
+    "ex_en": "He probably likes you.",
+    "ex_ja": "あいつはたぶんきみのことが好きだよ。",
+    "memo": "probably は 80%〜90% ぐらい"
+  },
+  {
+    "lesson": "9-2",
+    "part": "2",
+    "en": "scared",
+    "answer": "scared",
+    "ipa": "[skéərd]",
+    "pos": "形",
+    "ja": "こわい",
+    "ex_en": "Aren't you scared? — No, I'm not.",
+    "ex_ja": "こわくないの？ — うん、こわくない。",
+    "memo": "動詞は scare(こわがらせる)"
+  },
+  {
+    "lesson": "9-2",
+    "part": "2",
+    "en": "disaster",
+    "answer": "disaster",
+    "ipa": "[dizǽstər]",
+    "pos": "名",
+    "ja": "災害",
+    "ex_en": "A disaster can happen at any time.",
+    "ex_ja": "災害はいつだって起こる可能性があります。",
+    "memo": ""
+  },
+  {
+    "lesson": "9-2",
+    "part": "2",
+    "en": "comfort",
+    "answer": "comfort",
+    "ipa": "[kʌ́mfərt]",
+    "pos": "動",
+    "ja": "慰める、元気づける",
+    "ex_en": "Thank you for comforting me.",
+    "ex_ja": "慰めてくれてありがと。",
+    "memo": ""
+  },
+  {
+    "lesson": "9-2",
+    "part": "2",
+    "en": "keep",
+    "answer": "keep",
+    "ipa": "[kí:p]",
+    "pos": "動",
+    "ja": "保つ、とっておく",
+    "ex_en": "Can you keep a secret?",
+    "ex_ja": "秘密守れる？",
+    "memo": ""
+  },
+  {
+    "lesson": "9-2",
+    "part": "2",
+    "en": "instant",
+    "answer": "instant",
+    "ipa": "[ínstənt]",
+    "pos": "形",
+    "ja": "即席の",
+    "ex_en": "Because I didn't have any instant glue with me.",
+    "ex_ja": "瞬間接着剤は持ってなかったから。",
+    "memo": ""
+  },
+  {
+    "lesson": "9-2",
+    "part": "2",
+    "en": "look for 〜",
+    "answer": "look for ",
+    "ipa": "[—]",
+    "pos": "句",
+    "ja": "〜を探す",
+    "ex_en": "It's so cold. I'm going to look for firewood.",
+    "ex_ja": "寒っ。薪探してくるね。",
+    "memo": ""
+  }
+]

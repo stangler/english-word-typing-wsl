@@ -1,0 +1,74 @@
+[
+  {
+    "lesson": "8-2",
+    "part": "2",
+    "en": "at that time",
+    "answer": "at that time",
+    "ipa": "[—]",
+    "pos": "句",
+    "ja": "その当時、そのとき",
+    "ex_en": "At that time, Japan was in a period of isolation.",
+    "ex_ja": "当時、日本は鎖国中でした。",
+    "memo": ""
+  },
+  {
+    "lesson": "8-2",
+    "part": "2",
+    "en": "radio",
+    "answer": "radio",
+    "ipa": "[réidiou]",
+    "pos": "名",
+    "ja": "ラジオ",
+    "ex_en": "Oh no, the radio is broken.",
+    "ex_ja": "ありゃ、ラジオが壊れてる。",
+    "memo": ""
+  },
+  {
+    "lesson": "8-2",
+    "part": "2",
+    "en": "stay",
+    "answer": "stay",
+    "ipa": "[stéi]",
+    "pos": "動",
+    "ja": "滞在する",
+    "ex_en": "I can stay in a sauna for only 20 seconds.",
+    "ex_ja": "サウナには20秒しか入っていられません。",
+    "memo": "名詞も stay(滞在)"
+  },
+  {
+    "lesson": "8-2",
+    "part": "2",
+    "en": "held",
+    "answer": "held",
+    "ipa": "[héld]",
+    "pos": "動",
+    "ja": "hold の過去形",
+    "ex_en": "My sister held a yoga class today.",
+    "ex_ja": "私の姉は今日ヨガ教室を開催しました。",
+    "memo": ""
+  },
+  {
+    "lesson": "8-2",
+    "part": "2",
+    "en": "quite",
+    "answer": "quite",
+    "ipa": "[kwáit]",
+    "pos": "副",
+    "ja": "かなり",
+    "ex_en": "Sadly, the reality was quite different.",
+    "ex_ja": "悲しいかな、現実はかなりちがった。",
+    "memo": "quite は very よりフォーマルな響き"
+  },
+  {
+    "lesson": "8-2",
+    "part": "2",
+    "en": "miss",
+    "answer": "miss",
+    "ipa": "[mís]",
+    "pos": "動",
+    "ja": "逃す",
+    "ex_en": "Tonight is the final episode. Don't miss it!",
+    "ex_ja": "今夜はいよいよ最終回。お見逃しなく！",
+    "memo": "形容詞は missing(行方不明の)"
+  }
+]

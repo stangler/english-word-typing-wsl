@@ -1,0 +1,110 @@
+[
+  {
+    "lesson": "6-2",
+    "part": "2",
+    "en": "they're",
+    "answer": "they're",
+    "ipa": "[ðéiər]",
+    "pos": "短",
+    "ja": "they are の短縮形",
+    "ex_en": "What are those? — They're okra.",
+    "ex_ja": "あれ何？ — オクラだよ。",
+    "memo": ""
+  },
+  {
+    "lesson": "6-2",
+    "part": "2",
+    "en": "aren't",
+    "answer": "aren't",
+    "ipa": "[á:rnt]",
+    "pos": "短",
+    "ja": "are not の短縮形",
+    "ex_en": "We aren't in 1-A. We are in 1-C.",
+    "ex_ja": "ぼくたちは 1-A じゃないよ。1-C。",
+    "memo": ""
+  },
+  {
+    "lesson": "6-2",
+    "part": "2",
+    "en": "some 〜, other(s) …",
+    "answer": "some ",
+    "ipa": "[—]",
+    "pos": "句",
+    "ja": "〜もいれば…もいる",
+    "ex_en": "Some people feel the rain. Others just get wet.",
+    "ex_ja": "雨を感じる人もいれば、ただ濡れるだけの奴らもいる。",
+    "memo": "by Bob Marley (レゲエ歌手)"
+  },
+  {
+    "lesson": "6-2",
+    "part": "2",
+    "en": "cafeteria",
+    "answer": "cafeteria",
+    "ipa": "[kæfətíəriə]",
+    "pos": "名",
+    "ja": "カフェテリア",
+    "ex_en": "Our school doesn't have a cafeteria.",
+    "ex_ja": "うちの学校には学食とかないよ。",
+    "memo": ""
+  },
+  {
+    "lesson": "6-2",
+    "part": "2",
+    "en": "other",
+    "answer": "other",
+    "ipa": "[ʌ́ðər]",
+    "pos": "代",
+    "ja": "ほかのもの",
+    "ex_en": "Where are the others? — They're not here yet.",
+    "ex_ja": "ほかの人たちは？ — まだ来てないよ。",
+    "memo": "形容詞も other(ほかの)"
+  },
+  {
+    "lesson": "6-2",
+    "part": "2",
+    "en": "bring",
+    "answer": "bring",
+    "ipa": "[bríŋ]",
+    "pos": "動",
+    "ja": "持ってくる",
+    "ex_en": "I forgot to bring my textbook again.",
+    "ex_ja": "教科書持ってくるのまた忘れた。",
+    "memo": "反対は take(持っていく)"
+  },
+  {
+    "lesson": "6-2",
+    "part": "2",
+    "en": "kind",
+    "answer": "kind",
+    "ipa": "[káind]",
+    "pos": "名",
+    "ja": "種類",
+    "ex_en": "That's a kind of mushroom too, isn't it?",
+    "ex_ja": "これもきのこの一種ですよね？",
+    "memo": ""
+  },
+  {
+    "lesson": "6-2",
+    "part": "2",
+    "en": "common",
+    "answer": "common",
+    "ipa": "[kámən]",
+    "pos": "形",
+    "ja": "よくある、一般的な",
+    "ex_en": "Higa is a common surname in Okinawa.",
+    "ex_ja": "比嘉は沖縄でよくある名字です。",
+    "memo": ""
+  },
+  {
+    "lesson": "6-2",
+    "part": "2",
+    "en": "Mexican",
+    "answer": "Mexican",
+    "ipa": "[méksikən]",
+    "pos": "形",
+    "ja": "メキシコの",
+    "ex_en": "Mr. Tanaka's tie looks kind of Mexican today.",
+    "ex_ja": "今日、田中先生のネクタイがなんかメキシコっぽい。",
+    "memo": "名詞は Mexico(メキシコ)"
+  }
+]

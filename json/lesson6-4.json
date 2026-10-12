@@ -1,0 +1,74 @@
+[
+  {
+    "lesson": "6-4",
+    "part": "Small Talk",
+    "en": "activity",
+    "answer": "activity",
+    "ipa": "[æktívəti]",
+    "pos": "名",
+    "ja": "活動",
+    "ex_en": "You don't have club activities today? — No.",
+    "ex_ja": "今日部活ないの？ — ないよ。",
+    "memo": "形容詞は active(活動的な)"
+  },
+  {
+    "lesson": "6-4",
+    "part": "Small Talk",
+    "en": "trip",
+    "answer": "trip",
+    "ipa": "[tríp]",
+    "pos": "名",
+    "ja": "旅行",
+    "ex_en": "Where are we going on our school trip?",
+    "ex_ja": "修学旅行ってどこに行くんだっけ？",
+    "memo": ""
+  },
+  {
+    "lesson": "6-4",
+    "part": "Small Talk",
+    "en": "contest",
+    "answer": "contest",
+    "ipa": "[kántest]",
+    "pos": "名",
+    "ja": "競技会",
+    "ex_en": "You should enter the screenplay contest!",
+    "ex_ja": "シナリオコンクールに応募しなよ！",
+    "memo": ""
+  },
+  {
+    "lesson": "6-4",
+    "part": "Small Talk",
+    "en": "lunchtime",
+    "answer": "lunchtime",
+    "ipa": "[lʌ́ntʃtàim]",
+    "pos": "名",
+    "ja": "昼食の時間",
+    "ex_en": "Are you okay? You missed lunchtime, right?",
+    "ex_ja": "だいじょうぶ？ 今日お昼ごはんの時間なかったよね。",
+    "memo": ""
+  },
+  {
+    "lesson": "6-4",
+    "part": "Small Talk",
+    "en": "agree",
+    "answer": "agree",
+    "ipa": "[əgrí:]",
+    "pos": "動",
+    "ja": "意見が合う、賛成する",
+    "ex_en": "What do you think? — I agree with Kenta.",
+    "ex_ja": "どう思う？ — 私はケンタの意見に賛成かな。",
+    "memo": "反対は disagree(意見が合わない)"
+  },
+  {
+    "lesson": "6-4",
+    "part": "Small Talk",
+    "en": "menu",
+    "answer": "menu",
+    "ipa": "[ménju:]",
+    "pos": "名",
+    "ja": "献立表",
+    "ex_en": "Can I get the menu? — Of course, just a moment.",
+    "ex_ja": "メニューいただけますか？ — はい、少々お待ちください。",
+    "memo": ""
+  }
+]

@@ -1,0 +1,74 @@
+[
+  {
+    "lesson": "8-4",
+    "part": "Small Talk",
+    "en": "hot spring",
+    "answer": "hot spring",
+    "ipa": "[hát spríŋ]",
+    "pos": "名",
+    "ja": "温泉",
+    "ex_en": "Capybaras love hot springs.",
+    "ex_ja": "カピバラは温泉が大好きです。",
+    "memo": ""
+  },
+  {
+    "lesson": "8-4",
+    "part": "Small Talk",
+    "en": "barbecue",
+    "answer": "barbecue",
+    "ipa": "[bá:rbikjù:]",
+    "pos": "名",
+    "ja": "バーベキュー",
+    "ex_en": "Alright, let's get ready for the barbecue.",
+    "ex_ja": "よし、バーベキューの準備をするぞ。",
+    "memo": ""
+  },
+  {
+    "lesson": "8-4",
+    "part": "Small Talk",
+    "en": "snow",
+    "answer": "snow",
+    "ipa": "[snóu]",
+    "pos": "名",
+    "ja": "雪",
+    "ex_en": "Oh, the rain turned into snow.",
+    "ex_ja": "あ、雨が雪に変わった。",
+    "memo": "動詞も snow(雪が降る)"
+  },
+  {
+    "lesson": "8-4",
+    "part": "Small Talk",
+    "en": "neighbor",
+    "answer": "neighbor",
+    "ipa": "[néibər]",
+    "pos": "名",
+    "ja": "隣人、近所の人",
+    "ex_en": "My neighbor has a parakeet.",
+    "ex_ja": "お隣さんはインコを飼っています。",
+    "memo": "neighbor の下線部は発音しない"
+  },
+  {
+    "lesson": "8-4",
+    "part": "Small Talk",
+    "en": "plane",
+    "answer": "plane",
+    "ipa": "[pléin]",
+    "pos": "名",
+    "ja": "飛行機",
+    "ex_en": "I'm good at making paper planes. — I see.",
+    "ex_ja": "おれ、紙飛行機つくるのうまいよ。— ふーん。",
+    "memo": "plane は airplane を短く言ったもの"
+  },
+  {
+    "lesson": "8-4",
+    "part": "Small Talk",
+    "en": "airplane",
+    "answer": "airplane",
+    "ipa": "[éərplèin]",
+    "pos": "名",
+    "ja": "飛行機",
+    "ex_en": "Why are airplanes so beautiful?",
+    "ex_ja": "飛行機ってなんであんなにかっこいいの？",
+    "memo": ""
+  }
+]

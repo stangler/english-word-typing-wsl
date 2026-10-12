@@ -1,0 +1,50 @@
+[
+  {
+    "lesson": "8-6",
+    "part": "Take Action! Listen 4",
+    "en": "cafe",
+    "answer": "cafe",
+    "ipa": "[kæféi]",
+    "pos": "名",
+    "ja": "喫茶店",
+    "ex_en": "Was this cafe here before?",
+    "ex_ja": "このカフェ前からあったっけ？",
+    "memo": ""
+  },
+  {
+    "lesson": "8-6",
+    "part": "Take Action! Listen 4",
+    "en": "college",
+    "answer": "college",
+    "ipa": "[kálidʒ]",
+    "pos": "名",
+    "ja": "大学",
+    "ex_en": "Oh, you have a brother? — Yes. He's in college.",
+    "ex_ja": "え、お兄ちゃんいるの？ — うん。大学生。",
+    "memo": "college は単科大学 university は総合大学"
+  },
+  {
+    "lesson": "8-6",
+    "part": "Take Action! Listen 4",
+    "en": "land",
+    "answer": "land",
+    "ipa": "[lǽnd]",
+    "pos": "名",
+    "ja": "土地",
+    "ex_en": "The most expensive land in Japan is in Ginza.",
+    "ex_ja": "日本でいちばん土地が高いのは銀座です。",
+    "memo": "動詞も land(上陸する、着陸する)"
+  },
+  {
+    "lesson": "8-6",
+    "part": "Take Action! Listen 4",
+    "en": "missing",
+    "answer": "missing",
+    "ipa": "[mísiŋ]",
+    "pos": "形",
+    "ja": "行方不明の",
+    "ex_en": "My eraser is missing. It's heart-shaped.",
+    "ex_ja": "消しゴムが行方不明。ハート型の。",
+    "memo": "動詞は miss(逃す)"
+  }
+]

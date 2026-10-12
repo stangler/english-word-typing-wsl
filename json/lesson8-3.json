@@ -1,0 +1,50 @@
+[
+  {
+    "lesson": "8-3",
+    "part": "3",
+    "en": "yeah",
+    "answer": "yeah",
+    "ipa": "[jéə]",
+    "pos": "副",
+    "ja": "うん、ああ",
+    "ex_en": "Let's walk home together today. — Yeah.",
+    "ex_ja": "今日いっしょに帰ろ。— うん。",
+    "memo": ""
+  },
+  {
+    "lesson": "8-3",
+    "part": "3",
+    "en": "souvenir",
+    "answer": "souvenir",
+    "ipa": "[sù:vəníər]",
+    "pos": "名",
+    "ja": "お土産",
+    "ex_en": "I think I'll buy some souvenirs for myself.",
+    "ex_ja": "なんか自分にもおみやげ買おうかな。",
+    "memo": "人にあげるおみやげは gift や present が普通"
+  },
+  {
+    "lesson": "8-3",
+    "part": "3",
+    "en": "charm",
+    "answer": "charm",
+    "ipa": "[tʃá:rm]",
+    "pos": "名",
+    "ja": "お守り",
+    "ex_en": "This charm brought me good luck. Yay!",
+    "ex_ja": "このお守りご利益あった！ イェイ！",
+    "memo": ""
+  },
+  {
+    "lesson": "8-3",
+    "part": "3",
+    "en": "lonely",
+    "answer": "lonely",
+    "ipa": "[lóunli]",
+    "pos": "形",
+    "ja": "孤独な、さびしい",
+    "ex_en": "Don't look at me with those lonely eyes.",
+    "ex_ja": "そんなさびしそうな目で見ないでー。",
+    "memo": "名詞は loneliness(さびしさ)"
+  }
+]
