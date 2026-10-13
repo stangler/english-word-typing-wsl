@@ -398,6 +398,61 @@
     .feedback{animation:none !important;}
     .lesson-card,.btn-primary,.btn-secondary{transition:none !important;}
   }
+
+  /* ---------- 単語一覧 ---------- */
+  /* 一覧は問題ページと同じノート風カード（白地）の上に表示する。長い一覧でもリング穴が等間隔で続くよう背景で描く */
+  .ls-card .ring-holes{display:block;padding:0;
+    background:radial-gradient(circle at 50% 50%, var(--paper) 0 6px, rgba(0,0,0,.14) 6.5px, transparent 7.5px) 0 28px / 14px 96px repeat-y;}
+  .ls-card .ring-holes span{display:none;}
+  .ls-section-label{font-size:.78rem;font-weight:700;color:var(--ink-soft);letter-spacing:.06em;margin:0 0 8px;}
+  .ls-btn-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;}
+  .ls-btn-row .category-btn.ls-sel{background:var(--ink);border-color:var(--ink);color:var(--paper);}
+  .ls-tools{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:6px 0 4px;}
+  .ls-search{
+    flex:1;min-width:180px;padding:9px 12px;border:2px solid var(--line);border-radius:10px;
+    font-family:inherit;font-size:.95rem;background:var(--card);color:var(--ink);
+  }
+  .ls-search:focus{outline:none;border-color:var(--blue);}
+  .ls-toggle{display:flex;align-items:center;gap:6px;font-size:.88rem;cursor:pointer;}
+  .ls-summary{font-size:.8rem;color:var(--ink-soft);margin:6px 0 2px;}
+  .ls-heading{
+    display:flex;justify-content:space-between;align-items:baseline;
+    font-size:1rem;font-weight:900;margin:26px 0 8px;padding-bottom:4px;border-bottom:2px solid var(--line);
+  }
+  .ls-heading .ls-cnt{font-size:.78rem;font-weight:500;color:var(--ink-soft);}
+  .ls-list{list-style:none;margin:0;padding:0;}
+  .ls-row{
+    display:grid;grid-template-columns:30px 1fr 1fr;gap:12px;align-items:start;
+    padding:10px 4px;border-bottom:1px dashed var(--line);
+  }
+  .ls-no{font-family:'JetBrains Mono','Consolas',monospace;font-size:.72rem;color:var(--ink-soft);padding-top:4px;}
+  .ls-ja{font-size:.98rem;line-height:1.6;}
+  .ls-exja{font-size:.8rem;color:var(--ink-soft);margin-top:2px;}
+  .ls-a{min-height:30px;}
+  .ls-ahead{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+  .ls-en{font-family:'JetBrains Mono','Consolas','Courier New',monospace;font-size:1.02rem;font-weight:700;}
+  .ls-pos{font-size:.7rem;font-weight:700;color:#fff;background:var(--blue);border-radius:999px;padding:1px 8px;}
+  .ls-ipa{font-family:'JetBrains Mono','Consolas',monospace;font-size:.78rem;color:var(--ink-soft);margin-top:2px;}
+  .ls-exen{font-size:.82rem;color:var(--ink-soft);margin-top:2px;}
+  .ls-a .audio-btn{width:32px;height:32px;font-size:.95rem;}
+  .ls-hide .ls-a{cursor:pointer;background:#f5e8e7;border-radius:6px;position:relative;}
+  .ls-hide .ls-a > *{visibility:hidden;}
+  .ls-hide .ls-a::after{content:'タップで表示';position:absolute;left:10px;top:5px;font-size:.72rem;font-weight:500;color:var(--red);}
+  .ls-hide .ls-row.revealed .ls-a{cursor:default;background:transparent;}
+  .ls-hide .ls-row.revealed .ls-a > *{visibility:visible;}
+  .ls-hide .ls-row.revealed .ls-a::after{content:none;}
+  .ls-empty{padding:32px 0;color:var(--ink-soft);text-align:center;}
+  .ls-mark{background:#fbe9a8;color:inherit;padding:0 1px;border-radius:2px;}
+  @media (max-width:480px){
+    .ls-row{grid-template-columns:24px 1fr;}
+    .ls-a{grid-column:2;}
+  }
+  @media print{
+    .ls-controls,.ls-a .audio-btn,#btn-list-back,.ls-card .ring-holes{display:none !important;}
+    .ls-card{box-shadow:none;padding-left:24px;}
+    .ls-card::before{display:none;}
+    .ls-row{break-inside:avoid;}
+  }
 </style>
 </head>
 <body>
@@ -425,6 +480,7 @@
 
       <button id="history-btn" class="btn-primary" style="width:100%;margin-top:12px;">📊 履歴を見る</button>
       <button id="weak-btn" class="btn-secondary" style="width:100%;margin-top:10px;">📉 苦手分析</button>
+      <button id="list-btn" class="btn-secondary" style="width:100%;margin-top:10px;">📋 単語一覧</button>
 
       <div class="history-actions" style="margin-top:18px;justify-content:center;">
         <button id="btn-clear-history" class="btn-secondary">履歴をすべて削除</button>
@@ -522,6 +578,18 @@
       <div id="weak-container"></div>
     </section>
 
+    <!-- ============ WORD LIST SCREEN ============ -->
+    <section id="screen-list" class="screen" hidden>
+      <div class="history-detail-header">
+        <h1 class="title">📋 単語一覧</h1>
+        <button id="btn-list-back" class="btn-secondary">戻る</button>
+      </div>
+      <div class="card ls-card">
+        <div class="ring-holes"><span></span></div>
+        <div id="list-container"></div>
+      </div>
+    </section>
+
   </main>
 </div>
 
@@ -546,6 +614,7 @@ const screens = {
   result: document.getElementById('screen-result'),
   history: document.getElementById('screen-history'),
   weak: document.getElementById('screen-weak'),
+  list: document.getElementById('screen-list'),
 };
 function showScreen(name){
   for(const k in screens) screens[k].hidden = (k !== name);
@@ -1891,6 +1960,149 @@ function showWeakScreen(){
 }
 
 document.getElementById('btn-weak-back').addEventListener('click', () => showScreen('start'));
+
+/* ============================================================
+   単語一覧（レッスン/パート別に 意味・英語・発音・例文 を一覧表示）
+============================================================ */
+const listState = { group: null, sub: 'all', query: '', hide: false };
+let listShownItems = [];
+
+function getListGroups(){
+  const {nums, hasElem, strLessons, splitLessons, lessonGroups} = getLessonList();
+  const itemsOf = key => WORDS.filter(w => String(w.lesson) === String(key));
+  const groups = [];
+  lessonGroups.forEach(n => {
+    const keys = splitLessons.filter(k => k.split('-')[0] === n);
+    groups.push({
+      id: 'lesson:' + n, label: 'Lesson ' + n,
+      subs: keys.map(k => ({id: k, label: getSplitLessonLabel(k).replace('Lesson' + n + ' ', ''), items: itemsOf(k)})),
+    });
+  });
+  nums.forEach(n => {
+    groups.push({id: 'lesson:' + n, label: 'Lesson ' + n, subs: [{id: String(n), label: 'Lesson ' + n, items: itemsOf(n)}]});
+  });
+  if(hasElem){
+    groups.push({
+      id: 'elementary', label: '小学校',
+      subs: getElementaryCategories().map(c => ({id: c, label: c, items: WORDS.filter(w => w.lesson === 'elementary' && w.part === c)})),
+    });
+  }
+  strLessons.forEach(l => {
+    groups.push({id: 'lesson:' + l, label: l, subs: [{id: l, label: l, items: itemsOf(l)}]});
+  });
+  return groups;
+}
+
+function listHighlight(text, q){
+  const safe = escapeHtml(text == null ? '' : String(text));
+  if(!q) return safe;
+  const re = new RegExp('(' + escapeHtml(q).replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi');
+  return safe.replace(re, '<mark class="ls-mark">$1</mark>');
+}
+
+function renderList(){
+  stopAudio();
+  const groups = getListGroups();
+  const container = document.getElementById('list-container');
+  if(groups.length === 0){
+    container.innerHTML = '<div class="ls-empty">データがありません</div>';
+    return;
+  }
+  if(!groups.some(g => g.id === listState.group)) { listState.group = groups[0].id; listState.sub = 'all'; }
+  const group = groups.find(g => g.id === listState.group);
+  if(listState.sub !== 'all' && !group.subs.some(sb => sb.id === listState.sub)) listState.sub = 'all';
+
+  const q = listState.query.trim();
+  const ql = q.toLowerCase();
+  const matches = w => !ql || [w.en, w.ja, w.ex_en, w.ex_ja].some(t => String(t || '').toLowerCase().includes(ql));
+
+  listShownItems = [];
+  let shown = 0;
+  const blocks = [];
+  group.subs.forEach(sb => {
+    if(listState.sub !== 'all' && sb.id !== listState.sub) return;
+    const items = sb.items.filter(matches);
+    if(items.length === 0) return;
+    shown += items.length;
+    const rows = items.map((w, i) => {
+      const idx = listShownItems.length;
+      listShownItems.push(w);
+      const ipa = w.ipa && w.ipa !== '[—]' ? '<div class="ls-ipa">' + listHighlight(w.ipa, '') + '</div>' : '';
+      const pos = w.pos ? '<span class="ls-pos">' + escapeHtml(POS_LABELS[w.pos] || w.pos) + '</span>' : '';
+      const audio = canSpeak ? '<button type="button" class="audio-btn ls-audio" data-ls-idx="' + idx + '" aria-label="音声を再生" title="音声を再生">🔊</button>' : '';
+      return '<li class="ls-row">' +
+        '<span class="ls-no">' + (i + 1) + '</span>' +
+        '<div class="ls-q"><div class="ls-ja">' + listHighlight(w.ja, q) + '</div>' +
+          (w.ex_ja ? '<div class="ls-exja">' + listHighlight(w.ex_ja, q) + '</div>' : '') + '</div>' +
+        '<div class="ls-a"><div class="ls-ahead"><span class="ls-en">' + listHighlight(w.en, q) + '</span>' + pos + audio + '</div>' +
+          ipa + (w.ex_en ? '<div class="ls-exen">' + listHighlight(w.ex_en, q) + '</div>' : '') + '</div>' +
+        '</li>';
+    }).join('');
+    blocks.push('<div class="ls-heading"><span>' + escapeHtml(group.label === sb.label ? group.label : group.label + ' ' + sb.label) +
+      '</span><span class="ls-cnt">' + items.length + '問</span></div>' +
+      '<ol class="ls-list ' + (listState.hide ? 'ls-hide' : '') + '">' + rows + '</ol>');
+  });
+
+  const groupBtns = groups.map(g =>
+    '<button type="button" class="category-btn ' + (g.id === group.id ? 'ls-sel' : '') + '" data-ls-group="' + escapeHtml(g.id) + '">' +
+    escapeHtml(g.label) + '</button>').join('');
+  const subBtns = group.subs.length > 1
+    ? '<p class="ls-section-label">パートで絞る</p><div class="ls-btn-row">' +
+      '<button type="button" class="category-btn ' + (listState.sub === 'all' ? 'ls-sel' : '') + '" data-ls-sub="all">すべて（' +
+        group.subs.reduce((n, sb) => n + sb.items.length, 0) + '）</button>' +
+      group.subs.map(sb =>
+        '<button type="button" class="category-btn ' + (listState.sub === sb.id ? 'ls-sel' : '') + '" data-ls-sub="' + escapeHtml(sb.id) + '">' +
+        escapeHtml(sb.label) + '（' + sb.items.length + '）</button>').join('') + '</div>'
+    : '';
+
+  const hadFocus = document.activeElement && document.activeElement.id === 'ls-search';
+  const caret = hadFocus ? document.activeElement.selectionStart : null;
+
+  container.innerHTML =
+    '<div class="ls-controls">' +
+      '<p class="ls-section-label">レッスンを選ぶ</p><div class="ls-btn-row">' + groupBtns + '</div>' +
+      subBtns +
+      '<div class="ls-tools">' +
+        '<input type="search" id="ls-search" class="ls-search" placeholder="英語・日本語で検索" value="' + escapeHtml(listState.query) + '">' +
+        '<label class="ls-toggle"><input type="checkbox" id="ls-hide-check" ' + (listState.hide ? 'checked' : '') + '>答え（英語）を隠す</label>' +
+      '</div>' +
+      '<div class="ls-summary">' + shown + '問を表示中</div>' +
+    '</div>' +
+    (blocks.length ? blocks.join('') : '<div class="ls-empty">該当する単語がありません</div>');
+
+  container.querySelectorAll('[data-ls-group]').forEach(b => b.addEventListener('click', () => {
+    listState.group = b.dataset.lsGroup; listState.sub = 'all'; renderList();
+  }));
+  container.querySelectorAll('[data-ls-sub]').forEach(b => b.addEventListener('click', () => {
+    listState.sub = b.dataset.lsSub; renderList();
+  }));
+  document.getElementById('ls-hide-check').addEventListener('change', e => { listState.hide = e.target.checked; renderList(); });
+  const search = document.getElementById('ls-search');
+  search.addEventListener('input', e => { listState.query = e.target.value; renderList(); });
+  if(hadFocus){
+    search.focus();
+    if(caret !== null) search.setSelectionRange(caret, caret);
+  }
+  container.querySelectorAll('.ls-audio').forEach(b => b.addEventListener('click', e => {
+    e.stopPropagation();   // 「答えを隠す」の表示切替と干渉させない
+    speakItem(listShownItems[Number(b.dataset.lsIdx)]);
+  }));
+  container.querySelectorAll('.ls-hide .ls-row').forEach(row => row.addEventListener('click', () => row.classList.toggle('revealed')));
+}
+
+function showListScreen(){
+  // スタート画面でレッスン/小学校のパネルを開いていれば、そのレッスンから表示する
+  const panel = document.getElementById('elementary-categories');
+  if(panel && !panel.hidden && panel.dataset.kind){
+    listState.group = panel.dataset.kind;
+    listState.sub = 'all';
+  }
+  showScreen('list');
+  renderList();
+}
+
+document.getElementById('list-btn').addEventListener('click', showListScreen);
+document.getElementById('btn-list-back').addEventListener('click', () => { stopAudio(); showScreen('start'); });
 
 /* ---- Bootstrap ---- */
 migrateCompletionFromHistory();
