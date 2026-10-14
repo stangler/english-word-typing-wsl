@@ -1281,7 +1281,17 @@ function getItemStatus(item, history){
     // 分割セット: 出題済みの問題数で判定（既存の出題済みデータをそのまま利用）
     const attempted = loadAttempted();
     const n = item.chunkItems.filter(w => attempted.has(getWordKey(w))).length;
-    return n > 0 ? {done:true, chunkOnly:true} : {done:false};
+    if(n === 0) return {done:false};
+    // 正答率: セット内の単語それぞれの「直近の解答」が正解だった割合（単語別の記録がある単語が対象）
+    const stats = loadWordStats();
+    let seen = 0, ok = 0;
+    item.chunkItems.forEach(w => {
+      const r = stats[getWordKey(w)];
+      if(!r || !r.attempts) return;
+      seen += 1;
+      if(r.lastWrongAt !== r.lastAt) ok += 1;
+    });
+    return {done:true, chunkOnly:true, pct: seen ? Math.round(ok / seen * 100) : null};
   }
   const map = loadCompletionMap();
   const labels = item.matchLabels;
@@ -1333,7 +1343,7 @@ function renderProgress(history){
 
       badge.innerHTML = '<span class="pb-label">' + escapeHtml(item.badgeLabel) + '</span>' +
         (status.done
-          ? '<span class="pb-count">' + wDone + ' / ' + wTotal + '問</span>' + (status.chunkOnly ? '' : '<span class="pb-pct">' + status.latest.pct + '%</span>')
+          ? '<span class="pb-count">' + wDone + ' / ' + wTotal + '問</span>' + (status.chunkOnly ? (status.pct == null ? '' : '<span class="pb-pct">' + status.pct + '%</span>') : '<span class="pb-pct">' + status.latest.pct + '%</span>')
           : '<span class="pb-status">未着手</span>');
       badge.title = status.done
         ? (status.chunkOnly ? '挑戦済み' : '直近: ' + formatDate(status.latest.date) + '（' + status.count + '回挑戦）')
