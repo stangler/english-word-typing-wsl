@@ -731,44 +731,56 @@ function getElementaryCategories(){
   return parts.filter(Boolean).sort();
 }
 
+/* ---- 1セット最大10問への分割（履歴・進捗データは従来のパート単位のまま。出題時だけ分割） ---- */
+const CHUNK_MAX = 10;
+function splitIntoChunks(items){
+  const n = Math.max(1, Math.ceil(items.length / CHUNK_MAX));
+  const base = Math.floor(items.length / n), extra = items.length % n;
+  const out = [];
+  let pos = 0;
+  for(let i = 0; i < n; i++){
+    const size = base + (i < extra ? 1 : 0);
+    out.push(items.slice(pos, pos + size));
+    pos += size;
+  }
+  return out;
+}
+
+function addChunkButtons(grid, filter, baseLabel){
+  const {pool} = buildPool(filter);
+  const chunks = splitIntoChunks(pool);
+  const attempted = loadAttempted();
+  chunks.forEach((items, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'category-btn';
+    const suffix = chunks.length > 1 ? ' (' + (i + 1) + '/' + chunks.length + ')' : '';
+    const done = items.filter(w => attempted.has(getWordKey(w))).length;
+    btn.textContent = baseLabel + suffix + '（' + items.length + (done > 0 ? '・' + done + '問済' : '') + '）';
+    btn.addEventListener('click', ()=> startQuiz(filter, i));
+    grid.appendChild(btn);
+  });
+}
+
 function buildSubPanel(kind){
   const grid = document.getElementById('category-grid');
   const titleEl = document.getElementById('category-panel-title');
   grid.innerHTML = '';
 
   if(kind === 'elementary'){
-    titleEl.textContent = '小学校のカテゴリーを選んでください';
+    titleEl.textContent = '小学校のカテゴリーを選んでください（1セット最大' + CHUNK_MAX + '問）';
     const cats = getElementaryCategories();
-    const catCounts = {};
-    WORDS.filter(w => w.lesson === 'elementary').forEach(w => {
-      catCounts[w.part] = (catCounts[w.part] || 0) + 1;
-    });
-
-    cats.forEach(cat => {
-      const btn = document.createElement('button');
-      btn.className = 'category-btn';
-      btn.textContent = cat + '（' + (catCounts[cat] || 0) + '）';
-      btn.addEventListener('click', ()=> startQuiz('elementary|' + cat));
-      grid.appendChild(btn);
-    });
+    cats.forEach(cat => addChunkButtons(grid, 'elementary|' + cat, cat));
   } else if(kind.startsWith('lesson:')){
     const lessonNum = kind.split(':')[1];
-    titleEl.textContent = 'Lesson' + lessonNum + ' のパートを選んでください';
-
-    const counts = {};
-    WORDS.forEach(w => { counts[w.lesson] = (counts[w.lesson] || 0) + 1; });
+    titleEl.textContent = 'Lesson' + lessonNum + ' のパートを選んでください（1セット最大' + CHUNK_MAX + '問）';
 
     const lessonKeys = [...new Set(
       WORDS.filter(w => String(w.lesson).startsWith(lessonNum + '-')).map(w => w.lesson)
     )].sort((a,b) => Number(a.split('-')[1]) - Number(b.split('-')[1]));
 
     lessonKeys.forEach(key => {
-      const btn = document.createElement('button');
-      btn.className = 'category-btn';
       const partLabel = getSplitLessonLabel(key).replace('Lesson' + lessonNum + ' ', '');
-      btn.textContent = partLabel + '（' + (counts[key] || 0) + '）';
-      btn.addEventListener('click', ()=> startQuiz(key));
-      grid.appendChild(btn);
+      addChunkButtons(grid, key, partLabel);
     });
   }
 }
@@ -883,8 +895,11 @@ function buildPool(lessonFilter){
   return {pool, label};
 }
 
-function startQuiz(lessonFilter){
-  const {pool, label} = buildPool(lessonFilter);
+function startQuiz(lessonFilter, chunkIdx){
+  const {pool: fullPool, label} = buildPool(lessonFilter);
+  const chunks = splitIntoChunks(fullPool);
+  const ci = (chunkIdx !== undefined && chunks[chunkIdx]) ? chunkIdx : 0;
+  const pool = chunks[ci].slice();
   if(shuffleCheck.checked) shuffleArray(pool);
   state = {
     queue: pool,
@@ -893,7 +908,9 @@ function startQuiz(lessonFilter){
     wrong: [],
     answered: false,
     lessonFilter: lessonFilter,
-    lessonLabel: label
+    chunkIdx: ci,
+    lessonLabel: label,   // 履歴・進捗の記録キー（従来どおりパート単位）
+    displayLabel: chunks.length > 1 ? label + ' (' + (ci + 1) + '/' + chunks.length + ')' : label
   };
   showScreen('quiz');
   renderQuestion();
@@ -902,7 +919,7 @@ function startQuiz(lessonFilter){
 function renderQuestion(){
   const item = state.queue[state.index];
 
-  document.getElementById('quiz-lesson-label').textContent = state.lessonLabel;
+  document.getElementById('quiz-lesson-label').textContent = state.displayLabel || state.lessonLabel;
   document.getElementById('progress-fill').style.width = (state.index/state.queue.length*100) + '%';
   document.getElementById('progress-count').textContent = (state.index+1) + ' / ' + state.queue.length;
   document.getElementById('score-correct').textContent = '◯' + state.score;
@@ -1048,13 +1065,14 @@ document.getElementById('btn-retry-wrong').addEventListener('click', ()=>{
   if(shuffleCheck.checked) shuffleArray(pool);
   state = {
     queue: pool, index:0, score:0, wrong:[], answered:false,
-    lessonFilter: state.lessonFilter, lessonLabel: state.lessonLabel
+    lessonFilter: state.lessonFilter, chunkIdx: state.chunkIdx,
+    lessonLabel: state.lessonLabel, displayLabel: state.displayLabel
   };
   showScreen('quiz');
   renderQuestion();
 });
 document.getElementById('btn-retry-all').addEventListener('click', ()=>{
-  startQuiz(state.lessonFilter);
+  startQuiz(state.lessonFilter, state.chunkIdx);
 });
 document.getElementById('btn-back-start').addEventListener('click', ()=>{
   stopAudio();
@@ -1242,10 +1260,29 @@ function getProgressItems(){
     });
   });
 
-  return items;
+  // 11問以上のパートは、出題と同じ分割（1セット最大10問）のバッジに展開する
+  const expanded = [];
+  items.forEach(it => {
+    const chunks = splitIntoChunks(buildPool(it.filter).pool);
+    if(chunks.length === 1){ expanded.push(it); return; }
+    chunks.forEach((chunkItems, i) => {
+      expanded.push(Object.assign({}, it, {
+        badgeLabel: it.badgeLabel + ' (' + (i + 1) + '/' + chunks.length + ')',
+        chunkIdx: i,
+        chunkItems: chunkItems
+      }));
+    });
+  });
+  return expanded;
 }
 
 function getItemStatus(item, history){
+  if(item.chunkItems){
+    // 分割セット: 出題済みの問題数で判定（既存の出題済みデータをそのまま利用）
+    const attempted = loadAttempted();
+    const n = item.chunkItems.filter(w => attempted.has(getWordKey(w))).length;
+    return n > 0 ? {done:true, chunkOnly:true} : {done:false};
+  }
   const map = loadCompletionMap();
   const labels = item.matchLabels;
   const records = labels.map(l => map[l]).filter(Boolean);
@@ -1290,18 +1327,18 @@ function renderProgress(history){
       const badge = document.createElement('button');
       badge.className = 'progress-badge ' + (status.done ? 'done' : 'todo');
 
-      const {pool} = buildPool(item.filter);
+      const pool = item.chunkItems || buildPool(item.filter).pool;
       const wTotal = pool.length;
       const wDone = pool.filter(w => attempted.has(getWordKey(w))).length;
 
       badge.innerHTML = '<span class="pb-label">' + escapeHtml(item.badgeLabel) + '</span>' +
         (status.done
-          ? '<span class="pb-count">' + wDone + ' / ' + wTotal + '問</span><span class="pb-pct">' + status.latest.pct + '%</span>'
+          ? '<span class="pb-count">' + wDone + ' / ' + wTotal + '問</span>' + (status.chunkOnly ? '' : '<span class="pb-pct">' + status.latest.pct + '%</span>')
           : '<span class="pb-status">未着手</span>');
       badge.title = status.done
-        ? '直近: ' + formatDate(status.latest.date) + '（' + status.count + '回挑戦）'
+        ? (status.chunkOnly ? '挑戦済み' : '直近: ' + formatDate(status.latest.date) + '（' + status.count + '回挑戦）')
         : 'まだ挑戦していません';
-      badge.addEventListener('click', () => startQuiz(item.filter));
+      badge.addEventListener('click', () => startQuiz(item.filter, item.chunkIdx));
       grid.appendChild(badge);
     });
     section.appendChild(grid);
