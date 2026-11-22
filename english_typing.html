@@ -262,6 +262,32 @@
     height:auto;
     aspect-ratio:2 / 1;
   }
+  .chart-tooltip{
+    position:absolute;
+    z-index:5;
+    pointer-events:none;
+    background:var(--ink);
+    color:#fff;
+    font-size:.78rem;
+    line-height:1.45;
+    padding:6px 10px;
+    border-radius:8px;
+    white-space:nowrap;
+    box-shadow:0 4px 12px var(--shadow);
+    transform:translate(-50%,-100%);
+    opacity:0;
+    transition:opacity .08s;
+  }
+  .chart-tooltip.show{opacity:1;}
+  .chart-tooltip::after{
+    content:'';
+    position:absolute;
+    left:var(--arrow-x,50%);
+    top:100%;
+    margin-left:-5px;
+    border:5px solid transparent;
+    border-top-color:var(--ink);
+  }
   .chart-empty{
     text-align:center;padding:40px 0;
     color:var(--ink-soft);font-size:.95rem;
@@ -1396,11 +1422,58 @@ function renderPerLessonCharts(history, highlightIndex){
   });
 }
 
+function formatDateTimeFull(isoString){
+  const d = new Date(isoString);
+  const pad2 = n => String(n).padStart(2, '0');
+  return `${d.getFullYear()}/${pad2(d.getMonth() + 1)}/${pad2(d.getDate())} ${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
+}
+
+function attachChartTooltip(canvas, pts){
+  const wrapper = canvas.parentElement;
+  const tip = document.createElement('div');
+  tip.className = 'chart-tooltip';
+  wrapper.appendChild(tip);
+
+  const HIT_RADIUS = 14;
+  function hide(){
+    tip.classList.remove('show');
+    canvas.style.cursor = '';
+  }
+  function show(e){
+    const r = canvas.getBoundingClientRect();
+    const mx = e.clientX - r.left;
+    const my = e.clientY - r.top;
+    let best = null, bestD = HIT_RADIUS;
+    pts.forEach(p => {
+      const d = Math.hypot(p.x - mx, p.y - my);
+      if(d <= bestD){ best = p; bestD = d; }
+    });
+    if(!best){ hide(); return; }
+    canvas.style.cursor = 'pointer';
+    const en = best.entry;
+    tip.innerHTML = `${formatDateTimeFull(en.date)}<br>${en.pct}%（${en.correct}/${en.total}）`;
+    // 左右にはみ出さないよう位置を補正
+    const half = tip.offsetWidth / 2;
+    let left = canvas.offsetLeft + best.x;
+    const minLeft = half + 4;
+    const maxLeft = wrapper.clientWidth - half - 4;
+    const clamped = Math.min(Math.max(left, minLeft), maxLeft);
+    tip.style.left = clamped + 'px';
+    tip.style.top = (canvas.offsetTop + best.y - 10) + 'px';
+    tip.style.setProperty('--arrow-x', (half + (left - clamped)) + 'px');
+    tip.classList.add('show');
+  }
+  canvas.addEventListener('pointermove', show);
+  canvas.addEventListener('pointerdown', show);
+  canvas.addEventListener('pointerleave', hide);
+}
+
 function drawSingleChart(canvas, sorted, highlightIndex){
   const container = canvas.parentElement;
-  const rect = container.getBoundingClientRect();
+  const cs = getComputedStyle(container);
+  const innerW = container.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
   const dpr = window.devicePixelRatio || 1;
-  const w = rect.width || 600;
+  const w = innerW > 0 ? innerW : 600;
   const h = w * 0.5;
   canvas.width = w * dpr;
   canvas.height = h * dpr;
@@ -1412,6 +1485,14 @@ function drawSingleChart(canvas, sorted, highlightIndex){
   const pad = { top: 20, right: 20, bottom: 40, left: 44 };
   const chartW = w - pad.left - pad.right;
   const chartH = h - pad.top - pad.bottom;
+
+  // ホバー用: 各点の座標を登録して吹き出し（日付・時刻）を表示
+  const hoverPts = sorted.map((s, i) => ({
+    x: sorted.length < 2 ? pad.left + chartW / 2 : pad.left + (i / (sorted.length - 1)) * chartW,
+    y: pad.top + chartH * (1 - s.entry.pct / 100),
+    entry: s.entry
+  }));
+  attachChartTooltip(canvas, hoverPts);
 
   // Clear
   ctx.clearRect(0, 0, w, h);
